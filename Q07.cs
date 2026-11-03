@@ -13,7 +13,7 @@ namespace Questions
         public string Status { get; set; }
     }
 
-    public class Question_7
+    public class Q07
     {
         public static void Run()
         {

@@ -56,9 +56,9 @@ namespace Questions
         {
             List<EmployeeRecord> employees = new List<EmployeeRecord>();
 
-            employees.Add(new EmployeeRecord("Amit Kumar", 25, null, DateTime.Now));
-            employees.Add(new EmployeeRecord("Priya Sharma", 30, 0m, DateTime.Now.AddDays(-5)));
-            employees.Add(new EmployeeRecord("Rohan Patel", null, 15000m, null));
+            employees.Add(new EmployeeRecord("Shivay Wadhera", 25, null, DateTime.Now));
+            employees.Add(new EmployeeRecord("Dhruv Sharma", 30, 0m, DateTime.Now.AddDays(-5)));
+            employees.Add(new EmployeeRecord("Raj Patel", null, 15000m, null));
 
             Console.WriteLine("=== INITIAL ONBOARDING RECORDS ===");
             decimal totalKnownBonuses = 0m;

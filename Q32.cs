@@ -7,91 +7,62 @@ using System.Threading.Tasks;
 
 namespace Questions
 {
-    namespace Q22
+    namespace Q32
     {
-        public abstract class InsurancePolicy
+        public interface INotifier
         {
-            public string PolicyNumber { get; set; }
-            public string CustomerName { get; set; }
-
-            public InsurancePolicy(string policyNumber, string customerName)
-            {
-                if (string.IsNullOrWhiteSpace(policyNumber) || string.IsNullOrWhiteSpace(customerName))
-                {
-                    throw new ArgumentException("Required details cannot be empty.");
-                }
-                PolicyNumber = policyNumber;
-                CustomerName = customerName;
-            }
-
-            public abstract decimal CalculatePremium();
+            void SendNotification(string recipient, string message);
         }
 
-        public class HealthPolicy : InsurancePolicy
+        public class EmailNotifier : INotifier
         {
-            public decimal BasePremium { get; set; }
-            public int CoveredMembers { get; set; }
-
-            public HealthPolicy(string policyNumber, string customerName, decimal basePremium, int coveredMembers)
-                : base(policyNumber, customerName)
+            public void SendNotification(string recipient, string message)
             {
-                if (basePremium < 0)
+                if (string.IsNullOrWhiteSpace(recipient) || string.IsNullOrWhiteSpace(message))
                 {
-                    throw new ArgumentException("Base premium cannot be negative.");
+                    throw new ArgumentException("Recipient and message cannot be blank.");
                 }
-                if (coveredMembers <= 0)
-                {
-                    throw new ArgumentException("Covered members count must be positive.");
-                }
-                BasePremium = basePremium;
-                CoveredMembers = coveredMembers;
-            }
-
-            public override decimal CalculatePremium()
-            {
-                return BasePremium + (CoveredMembers * 500m);
+                Console.WriteLine("Channel: Email | Recipient: " + recipient + " | Message: " + message);
             }
         }
 
-        public class MotorPolicy : InsurancePolicy
+        public class SmsNotifier : INotifier
         {
-            public decimal DeclaredVehicleValue { get; set; }
-
-            public MotorPolicy(string policyNumber, string customerName, decimal declaredVehicleValue)
-                : base(policyNumber, customerName)
+            public void SendNotification(string recipient, string message)
             {
-                if (declaredVehicleValue < 0)
+                if (string.IsNullOrWhiteSpace(recipient) || string.IsNullOrWhiteSpace(message))
                 {
-                    throw new ArgumentException("Declared vehicle value cannot be negative.");
+                    throw new ArgumentException("Recipient and message cannot be blank.");
                 }
-                DeclaredVehicleValue = declaredVehicleValue;
-            }
-
-            public override decimal CalculatePremium()
-            {
-                return DeclaredVehicleValue * 0.03m;
+                Console.WriteLine("Channel: SMS | Recipient: " + recipient + " | Message: " + message);
             }
         }
 
         internal class Program
         {
+            public static void ProcessAlert(INotifier notifier, string recipient, string message)
+            {
+                notifier.SendNotification(recipient, message);
+            }
+
             static void Main(string[] args)
             {
-                InsurancePolicy[] portfolio = new InsurancePolicy[]
-                {
-                new HealthPolicy("HP101", "Rahul Sharma", 5000m, 4),
-                new MotorPolicy("MP202", "Priya Patel", 600000m)
-                };
+                INotifier emailChannel = new EmailNotifier();
+                INotifier smsChannel = new SmsNotifier();
 
-                Console.WriteLine("=== INSURANCE POLICY PREMIUM SUMMARY ===");
-                for (int i = 0; i < portfolio.Length; i++)
+                Console.WriteLine("=== ALERT DELIVERY PRODUCTION ===");
+                ProcessAlert(emailChannel, "admin@company.com", "System disk space running low.");
+                ProcessAlert(smsChannel, "+919876543210", "OTP code for login verified.");
+
+                try
                 {
-                    Console.WriteLine("Policy: " + portfolio[i].PolicyNumber +
-                                      " | Holder: " + portfolio[i].CustomerName +
-                                      " | Calculated Premium: INR " + portfolio[i].CalculatePremium());
+                    ProcessAlert(emailChannel, "", "Missing destination text test.");
+                }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine("Validation Block Caught: " + ex.Message);
                 }
             }
         }
     }
-}
 }
